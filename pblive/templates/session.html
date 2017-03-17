@@ -1,0 +1,40 @@
+{#
+    PBLive
+    Copyright © 2017  RunasSudo (Yingtong Li)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{% extends 'semantic_base.html' %}
+
+{% block main %}
+	<div class="ui container" id="session_main">
+		Loading, please wait.
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src="{{ url_for('static', filename='vendor/socket-io/socket.io.min.js') }}"></script>
+	<script>
+		var session_name = '{{ session.name }}';
+		var socket = io.connect('http://' + document.domain + ':' + location.port);
+		socket.on('connect', function() {
+			socket.emit('join', session_name);
+		});
+		
+		socket.on('update', function(data) {
+			$('#session_main').html(data);
+		});
+	</script>
+{% endblock %}

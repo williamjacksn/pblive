@@ -1,0 +1,93 @@
+{#
+    PBLive
+    Copyright © 2017  RunasSudo (Yingtong Li)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{% extends 'question_admin.html' %}
+
+{% block prompt %}
+	{% if session.questions[question_num].prompt %}
+		<p><b>{{ session.questions[question_num].prompt }}</b></p>
+	{% endif %}
+{% endblock %}
+
+{% block base %}
+	{% if session.questions[question_num].revealed %}
+		<canvas id="draw_canvas"></canvas>
+		
+		<script>
+			var context = document.getElementById('draw_canvas').getContext("2d");
+			
+			var images = new Array();
+			var numToLoad = {{ data.responses_for_question(session, question_num) }} + 1;
+			var numLoaded = 0;
+			function onImageLoad() {
+				numLoaded += 1;
+				if (numLoaded >= numToLoad) {
+					var imageAR = image.width / image.height;
+					
+					function redraw() {
+						context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+						
+						context.globalAlpha = 1;
+						context.drawImage(image, 0, 0, image.width * scale, image.height * scale);
+						context.globalAlpha = 0.5;
+						for (var i = 0; i < numToLoad; i++) {
+							try {
+								var scale2 = image.height / images[i].height * scale;
+								context.drawImage(images[i], 0, 0, images[i].width * scale2, images[i].height * scale2);
+							} catch (exc) {
+								console.log(exc);
+							}
+						}
+					}
+					
+					function resize_canvas() {
+						document.getElementById('draw_canvas').width = document.getElementById('session_main').clientWidth;
+						document.getElementById('draw_canvas').height = 0.8 * window.innerHeight;
+						
+						// Recalculate scale
+						canvasAR = context.canvas.width / context.canvas.height;
+						scale = (canvasAR > imageAR) ? (context.canvas.height / image.height) : (context.canvas.width / image.width); // image dim * scale = canvas dim
+						
+						redraw();
+					}
+					window.onresize = resize_canvas;
+					resize_canvas();
+				}
+			}
+			
+			// Load images
+			var image = new Image();
+			image.src = '{{ url_for('image', location=session.questions[question_num].image) }}';
+			image.onload = onImageLoad;
+			image.onerror = onImageLoad;
+			
+			var tmp;
+			{% for _, user in data.users.items() %}
+				{% if user['session_name'] == session['name'] and question_num in user['answers'] %}
+		 			tmp = new Image();
+					tmp.src = '{{ user['answers'][question_num] }}';
+					tmp.onload = onImageLoad;
+					tmp.onerror = onImageLoad;
+					images.push(tmp);
+				{% endif %}
+			{% endfor %}
+		</script>
+	{% else %}
+		<p style="text-align: center;"><img src="{{ url_for('image', location=session.questions[question_num].image) }}" style="width: 100%; max-height: 100%;"></p>
+	{% endif %}
+{% endblock %}

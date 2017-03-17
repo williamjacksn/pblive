@@ -1,0 +1,42 @@
+{#
+    PBLive
+    Copyright © 2017  RunasSudo (Yingtong Li)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{% extends 'question_admin.html' %}
+
+{% block base %}
+	{% if session.questions[question_num].revealed %}
+		<ul class="ui list">
+			{% for answer in session.questions[question_num].answers %}
+				<li style="line-height: 32px;">
+					{{ answer }}:
+					{% for _, user in data.users.items() %}
+						{% if user.session_name == session.name and user.answers[question_num] == answer %}
+							<button class="ui button" style="background-color: {{ user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ user.colour[0] }}</button>
+						{% endif %}
+					{% endfor %}
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<ul class="ui list">
+			{% for answer in session.questions[question_num].answers %}
+				<li>{{ answer }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+{% endblock base %}

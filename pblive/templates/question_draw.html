@@ -1,0 +1,130 @@
+{#
+    PBLive
+    Copyright © 2017  RunasSudo (Yingtong Li)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{% extends 'question.html' %}
+
+{% block prompt %}
+{% endblock %}
+
+{% block base %}
+	<p><button class="ui button" onclick="clickX.length = 0; clickY.length = 0; clickDrag.length = 0; redraw(true);">Clear</button></p>
+	
+	<canvas id="draw_canvas"></canvas>
+	
+	<script>
+		var clickX = new Array();
+		var clickY = new Array();
+		var clickDrag = new Array();
+		var paint = false;
+		var context = document.getElementById('draw_canvas').getContext("2d");
+		
+		var image = new Image();
+		image.src = '{{ url_for('image', location=session.questions[question_num].image) }}';
+		image.onload = function() {
+			// phew!
+			
+			var imageAR = image.width / image.height;
+			var canvasAR;
+			var scale;
+			
+			function down(e) {
+				e.preventDefault();
+				if (e.touches)
+					e = e.touches[0]
+				var mouseX = e.pageX - this.offsetLeft;
+				var mouseY = e.pageY - this.offsetTop;
+				
+				paint = true;
+				addClick((e.pageX - this.offsetLeft) / scale, (e.pageY - this.offsetTop) / scale, false);
+				redraw(true);
+			}
+			function move(e) {
+				e.preventDefault();
+				if (e.touches)
+					e = e.touches[0]
+				if (paint) {
+					addClick((e.pageX - this.offsetLeft) / scale, (e.pageY - this.offsetTop) / scale, true);
+					redraw(true);
+				}
+			}
+			function up(e) {
+				e.preventDefault();
+				paint = false;
+				// Submit image
+				redraw(false);
+				socket.emit('answer', {{ question_num }}, context.canvas.toDataURL('image/png'));
+				redraw(true);
+			}
+			
+			$('#draw_canvas').mousedown(down);
+			$('#draw_canvas').mousemove(move);
+			$('#draw_canvas').mouseup(up);
+			$('#draw_canvas').mouseleave(up);
+			
+			$('#draw_canvas').on('touchstart', down);
+			$('#draw_canvas').on('touchmove', move);
+			$('#draw_canvas').on('touchend', up);
+			
+			function addClick(a, b, c) {
+				clickX.push(a);
+				clickY.push(b);
+				clickDrag.push(c);
+			}
+			
+			function redraw(drawImage) {
+				context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+				
+				if (drawImage) {
+					// Start at 0, 0 for simplicity
+					// TODO: Center the image
+					context.drawImage(image, 0, 0, image.width * scale, image.height * scale);
+				}
+				
+				context.strokeStyle = "#FF0000";
+				context.lineJoin = "round";
+				context.lineWidth = 5;
+				
+				for (var i=0; i < clickX.length; i++) {
+					context.beginPath();
+					if (clickDrag[i] && i) {
+						context.moveTo(clickX[i-1] * scale, clickY[i-1] * scale);
+					} else {
+						context.moveTo((clickX[i]-1) * scale, clickY[i] * scale);
+					}
+					context.lineTo(clickX[i] * scale, clickY[i] * scale);
+					context.closePath();
+					context.stroke();
+				}
+			}
+			window.redraw = redraw;
+			
+			function resize_canvas() {
+				document.getElementById('draw_canvas').width = document.getElementById('session_main').clientWidth;
+				document.getElementById('draw_canvas').height = 0.8 * window.innerHeight;
+				
+				// Recalculate scale
+				canvasAR = context.canvas.width / context.canvas.height;
+				scale = (canvasAR > imageAR) ? (context.canvas.height / image.height) : (context.canvas.width / image.width); // image dim * scale = canvas dim
+				
+				redraw(true);
+			}
+			window.onresize = resize_canvas;
+			resize_canvas();
+		}
+	</script>
+{% endblock %}
