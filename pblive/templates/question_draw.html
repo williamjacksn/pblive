@@ -64,11 +64,16 @@
 			}
 			function up(e) {
 				e.preventDefault();
-				paint = false;
-				// Submit image
-				redraw(false);
-				socket.emit('answer', {{ question_num }}, context.canvas.toDataURL('image/png'));
-				redraw(true);
+				if (paint) {
+					paint = false;
+					// Submit image
+					// Because we can only capture the whole canvas, we resize the canvas here to fit the image
+					init_canvas();
+					redraw(false);
+					socket.emit('answer', {{ question_num }}, context.canvas.toDataURL('image/png'));
+					resize_canvas();
+					redraw(true);
+				}
 			}
 			
 			$('#draw_canvas').mousedown(down);
@@ -122,6 +127,14 @@
 				scale = (canvasAR > imageAR) ? (context.canvas.height / image.height) : (context.canvas.width / image.width); // image dim * scale = canvas dim
 				
 				redraw(true);
+			}
+			function init_canvas() {
+				document.getElementById('draw_canvas').width = image.width;
+				document.getElementById('draw_canvas').height = image.height;
+				
+				// Recalculate scale
+				canvasAR = context.canvas.width / context.canvas.height;
+				scale = (canvasAR > imageAR) ? (context.canvas.height / image.height) : (context.canvas.width / image.width); // image dim * scale = canvas dim
 			}
 			window.onresize = resize_canvas;
 			resize_canvas();

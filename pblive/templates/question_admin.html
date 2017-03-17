@@ -37,5 +37,7 @@
 			<button class="ui primary button" onclick="socket.emit('reveal_answers', {{ question_num }});">Reveal responses</button>
 		{% endif %}
 	{% endblock %}
-	<button class="ui button" onclick="socket.emit('goto_question', {{ question_num + 1 }});">Next question</button>
+	{% if question_num < session.questions|length - 1 %}
+		<button class="ui button" onclick="socket.emit('goto_question', {{ question_num + 1 }});">Next question</button>
+	{% endif %}
 </p>
