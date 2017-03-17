@@ -78,9 +78,9 @@
 			
 			var tmp;
 			{% for _, user in data.users.items() %}
-				{% if user['session_name'] == session['name'] and question_num in user['answers'] %}
+				{% if user.session == session and question_num in user.answers %}
 		 			tmp = new Image();
-					tmp.src = '{{ user['answers'][question_num] }}';
+					tmp.src = '{{ user.answers[question_num] }}';
 					tmp.onload = onImageLoad;
 					tmp.onerror = onImageLoad;
 					images.push(tmp);

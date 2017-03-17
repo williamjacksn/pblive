@@ -25,7 +25,7 @@
 				<li style="line-height: 32px;">
 					{{ answer }}:
 					{% for _, user in data.users.items() %}
-						{% if user.session_name == session.name and user.answers[question_num] == answer %}
+						{% if user.session == session and user.answers[question_num] == answer %}
 							<button class="ui button" style="background-color: {{ user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ user.colour[0] }}</button>
 						{% endif %}
 					{% endfor %}
