@@ -26,10 +26,22 @@
 
 {% block base %}
 	{% if session.questions[question_num].revealed %}
+		<div>
+			<button class="ui button" style="height: 32px; padding-top: 0; padding-bottom: 0;" onclick="userToShow = null; redraw();">All</button>
+			{% for _, user in data.users.items() %}
+				{% if user.session == session and question_num in user.answers %}
+					<button class="ui button" style="background-color: {{ user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;" onclick="userToShow = '{{ user.sid }}'; redraw();">{{ user.colour[0] }}</button>
+				{% endif %}
+			{% endfor %}
+		</div>
+		
 		<canvas id="draw_canvas"></canvas>
 		
 		<script>
 			var context = document.getElementById('draw_canvas').getContext("2d");
+			
+			var users = new Array(); // Keep track of users to show/hide
+			var userToShow = null;
 			
 			var images = new Array();
 			var numToLoad = {{ data.responses_for_question(session, question_num) }} + 1;
@@ -45,7 +57,17 @@
 						context.globalAlpha = 1;
 						context.drawImage(image, 0, 0, image.width * scale, image.height * scale);
 						context.globalAlpha = 0.5;
-						for (var i = 0; i < numToLoad; i++) {
+						if (userToShow === null) {
+							for (var i = 0; i < images.length; i++) {
+								try {
+									var scale2 = image.height / images[i].height * scale;
+									context.drawImage(images[i], 0, 0, images[i].width * scale2, images[i].height * scale2);
+								} catch (exc) {
+									console.log(exc);
+								}
+							}
+						} else {
+							var i = users.indexOf(userToShow);
 							try {
 								var scale2 = image.height / images[i].height * scale;
 								context.drawImage(images[i], 0, 0, images[i].width * scale2, images[i].height * scale2);
@@ -54,6 +76,7 @@
 							}
 						}
 					}
+					window.redraw = redraw;
 					
 					function resize_canvas() {
 						document.getElementById('draw_canvas').width = document.getElementById('session_main').clientWidth;
@@ -84,6 +107,7 @@
 					tmp.onload = onImageLoad;
 					tmp.onerror = onImageLoad;
 					images.push(tmp);
+					users.push('{{ user.sid }}');
 				{% endif %}
 			{% endfor %}
 		</script>
