@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block base %}
-	<p><button class="ui button" onclick="clickX.length = 0; clickY.length = 0; clickDrag.length = 0; redraw(true);">Clear</button></p>
+	<p><button class="ui button" onclick="drawnImage = new Image(); submitImage(); redraw(true);">Clear</button></p>
 	
 	<canvas id="draw_canvas"></canvas>
 	
@@ -32,6 +32,13 @@
 		var clickDrag = new Array();
 		var paint = false;
 		var context = document.getElementById('draw_canvas').getContext("2d");
+		
+		{% if user.answers[question_num] %}
+			var drawnImage = new Image();
+			drawnImage.src = '{{ user.answers[question_num] }}';
+		{% else %}
+			var drawnImage = new Image();
+		{% endif %}
 		
 		var image = new Image();
 		image.src = '{{ url_for('image', location=session.questions[question_num].image) }}';
@@ -62,17 +69,29 @@
 					redraw(true);
 				}
 			}
+			function submitImage() {
+				// Because we can only capture the whole canvas, we resize the canvas here to fit the image
+				init_canvas();
+				redraw(false);
+				drawnImage.src = context.canvas.toDataURL('image/png');
+				socket.emit('answer', {{ question_num }}, drawnImage.src);
+				resize_canvas();
+				redraw(true);
+				drawnImage.onload = function(e) {
+					// Keep the data in the interim, but erase it once the cached image is loaded
+					clickX.length = 0;
+					clickY.length = 0;
+					clickDrag.length = 0;
+					redraw(true);
+				};
+			}
+			window.submitImage = submitImage;
 			function up(e) {
 				e.preventDefault();
 				if (paint) {
 					paint = false;
-					// Submit image
-					// Because we can only capture the whole canvas, we resize the canvas here to fit the image
-					init_canvas();
-					redraw(false);
-					socket.emit('answer', {{ question_num }}, context.canvas.toDataURL('image/png'));
-					resize_canvas();
-					redraw(true);
+					// Cache and submit image
+					submitImage();
 				}
 			}
 			
@@ -94,11 +113,20 @@
 			function redraw(drawImage) {
 				context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
 				
+				context.globalAlpha = 1;
 				if (drawImage) {
 					// Start at 0, 0 for simplicity
 					// TODO: Center the image
 					context.drawImage(image, 0, 0, image.width * scale, image.height * scale);
+					context.globalAlpha = 0.8;
 				}
+				
+				if (drawnImage.src != null) {
+					var scale2 = image.height / drawnImage.height * scale;
+					context.drawImage(drawnImage, 0, 0, drawnImage.width * scale2, drawnImage.height * scale2);
+				}
+				
+				context.globalAlpha = 1;
 				
 				context.strokeStyle = "{{ user.colour[1] }}";
 				context.lineJoin = "round";
