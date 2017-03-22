@@ -56,8 +56,8 @@
 						
 						context.globalAlpha = 1;
 						context.drawImage(image, 0, 0, image.width * scale, image.height * scale);
-						context.globalAlpha = 0.5;
 						if (userToShow === null) {
+							context.globalAlpha = 0.5;
 							for (var i = 0; i < images.length; i++) {
 								try {
 									var scale2 = image.height / images[i].height * scale;
@@ -67,6 +67,7 @@
 								}
 							}
 						} else {
+							context.globalAlpha = 0.8;
 							var i = users.indexOf(userToShow);
 							try {
 								var scale2 = image.height / images[i].height * scale;

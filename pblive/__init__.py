@@ -110,7 +110,6 @@ def socket_disconnect():
 @socketio.on('register')
 def socket_register(colour_id, colour_name):
 	user = pblive.data.users[flask.request.sid]
-	flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
 	
 	if not user.colour and (colour_id, colour_name) in user.session.colours:
 		user.colour = (colour_id, colour_name)
@@ -120,6 +119,8 @@ def socket_register(colour_id, colour_name):
 		for _, other_user in pblive.data.users.items():
 			if other_user != user and not other_user.colour and other_user.session == user.session:
 				flask_socketio.emit('update', flask.render_template('colour_picker.html', session=user.session), room=other_user.sid)
+	
+	flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
 
 @socketio.on('answer')
 def socket_answer(question_num, answer):
