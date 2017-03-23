@@ -31,7 +31,7 @@ socketio = flask_socketio.SocketIO(app)
 
 # Load session data
 for f in os.listdir('data'):
-	if f.endswith('.yaml'):
+	if f.endswith('.yaml') and not f.startswith('.'):
 		session_name = f[:-5]
 		with open(os.path.join('data', f)) as fh:
 			pblive.data.sessions[session_name] = data.Session.from_dict(yaml.load(fh), session_name)
@@ -102,7 +102,7 @@ def socket_disconnect():
 			
 			# Relay change
 			for _, other_user in pblive.data.users.items():
-				if other_user != user and 'colour' not in other_user and other_user.session == user.session:
+				if other_user != user and not other_user.colour and other_user.session == user.session:
 					flask_socketio.emit('update', flask.render_template('colour_picker.html', session=user.session), room=other_user.sid)
 		
 		del pblive.data.users[flask.request.sid]
@@ -134,7 +134,8 @@ def socket_answer(question_num, answer):
 		
 		# Relay change
 		for _, admin in pblive.data.admins.items():
-			flask_socketio.emit('update', render_question_admin(user.session, user.session.question_num), room=admin.sid)
+			if admin.session == user.session:
+				flask_socketio.emit('update', render_question_admin(user.session, user.session.question_num), room=admin.sid)
 
 @socketio.on('reveal_answers')
 def socket_reveal_answers(question_num):
@@ -159,6 +160,7 @@ def socket_goto_question(question_num):
 		if other_user.session == user.session and other_user.colour:
 			flask_socketio.emit('update', render_question(other_user, other_user.session, other_user.session.question_num), room=other_user.sid)
 	for _, admin in pblive.data.admins.items():
+		if admin.session == user.session:
 			flask_socketio.emit('update', render_question_admin(admin.session, admin.session.question_num), room=admin.sid)
 
 @socketio.on('pass_question')
@@ -174,4 +176,5 @@ def socket_pass_question():
 			if other_user.session == user.session and other_user.colour:
 				flask_socketio.emit('update', render_question(other_user, other_user.session, other_user.session.question_num), room=other_user.sid)
 		for _, admin in pblive.data.admins.items():
+			if admin.session == user.session:
 				flask_socketio.emit('update', render_question_admin(admin.session, admin.session.question_num), room=admin.sid)

@@ -50,7 +50,8 @@ class Question:
 		question_types = {
 			'mcq': MCQQuestion,
 			'draw': DrawQuestion,
-			'random': RandomQuestion
+			'random': RandomQuestion,
+			'type': TypeQuestion
 		}
 		question = question_types[obj['type']]()
 		question.load_dict(obj)
@@ -79,6 +80,10 @@ class RandomQuestion(Question):
 	def __init__(self):
 		self.answerer = None
 
+class TypeQuestion(Question):
+	template = 'question_type.html'
+	template_admin = 'question_type_admin.html'
+
 class User:
 	def __init__(self, sid=None, session=None, answers=None, colour=None):
 		if answers is None:
@@ -94,3 +99,13 @@ class Admin(User):
 
 def responses_for_question(session, question_num):
 	return len([user for _, user in users.items() if user.session == session and question_num in user.answers])
+
+def unique_answers_for_question(session, question_num):
+	answers = {}
+	for _, user in users.items():
+		if user.session == session and question_num in user.answers and user.answers[question_num] != '' and user.answers[question_num] != None:
+			if user.answers[question_num] in answers:
+				answers[user.answers[question_num]].append(user)
+			else:
+				answers[user.answers[question_num]] = [user]
+	return answers
