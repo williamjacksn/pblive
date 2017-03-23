@@ -31,8 +31,11 @@
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}">
 	</head>
 	<body>
-		<div id="pblive-main" class="ui text container">
-			{% block main %}{% endblock main %}
+		<div id="pblive-container" class="ui container">
+			<div id="pblive-left" style="width: 32px; margin-right: 16px; float: left;">&nbsp;</div>
+			<div id="pblive-main" style="width: calc(100% - 48px); float: left;">
+				{% block main %}{% endblock main %}
+			</div>
 		</div>
 		
 		<script src="{{ url_for('static', filename='vendor/jquery/jquery-3.1.1.min.js') }}"></script>

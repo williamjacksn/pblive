@@ -16,12 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #}
 
-<h1 class="ui dividing header">Pick a colour</h1>
+{% if user.sid in data.users %}
+	<div>YOU:</div>
+	<div><button class="ui button" style="background-color: {{ user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ user.colour[0] }}</button></div>
+	<div class="ui divider"></div>
+{% endif %}
 
-<div id="colour_picker_container">
-	<div style="line-height: 38px;">
-		{% for colour in session.colours %}
-			<button class="ui button" style="background-color: {{ colour[1] }}; width: 32px; height: 32px; padding: 0 0;" onclick="socket.emit('register', {{ colour[0] }}, '{{ colour[1] }}');">{{ colour[0] }}</button>
-		{% endfor %}
-	</div>
-</div>
+{% for _, other_user in data.users.items() %}
+	{% if other_user != user and other_user.colour and other_user.session == session %}
+		<div><button class="ui button" style="background-color: {{ other_user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ other_user.colour[0] }}</button></div>
+	{% endif %}
+{% endfor %}

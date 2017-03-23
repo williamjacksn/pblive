@@ -36,5 +36,8 @@
 		socket.on('update', function(data) {
 			$('#session_main').html(data);
 		});
+		socket.on('update_left', function(data) {
+			$('#pblive-left').html(data);
+		});
 	</script>
 {% endblock %}

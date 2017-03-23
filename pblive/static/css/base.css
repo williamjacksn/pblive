@@ -16,12 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pblive-main {
+#pblive-container {
 	padding-top: 5em;
 	padding-bottom: 5em;
 }
 @media only screen and (max-width: 767px) {
-	#pblive-main {
+	#pblive-container {
 		padding-top: 1em;
 		padding-bottom: 1em;
 	}

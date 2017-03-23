@@ -19,7 +19,7 @@
 {% extends 'semantic_base.html' %}
 
 {% block main %}
-	<div class="ui container" id="session_main">
+	<div id="session_main">
 		Loading, please wait.
 	</div>
 {% endblock %}
@@ -35,6 +35,9 @@
 		
 		socket.on('update', function(data) {
 			$('#session_main').html(data);
+		});
+		socket.on('update_left', function(data) {
+			$('#pblive-left').html(data);
 		});
 	</script>
 {% endblock %}

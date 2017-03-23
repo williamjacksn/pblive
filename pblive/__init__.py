@@ -85,6 +85,9 @@ def render_question(user, session, question_num):
 def render_question_admin(session, question_num):
 	return flask.render_template(session.questions[question_num].template_admin, session=session, question_num=session.question_num)
 
+def render_sidebar(user, session):
+	return flask.render_template('users.html', session=session, user=user)
+
 @socketio.on('join_admin')
 def socket_join(session_name):
 	app.logger.debug('New admin {} connected'.format(flask.request.sid))
@@ -95,6 +98,7 @@ def socket_join(session_name):
 	
 	# Send initial screen
 	flask_socketio.emit('update', render_question_admin(session, session.question_num), room=flask.request.sid)
+	flask_socketio.emit('update_left', render_sidebar(user, session), room=flask.request.sid)
 
 @socketio.on('disconnect')
 def socket_disconnect():
@@ -109,8 +113,13 @@ def socket_disconnect():
 			
 			# Relay change
 			for _, other_user in pblive.data.users.items():
-				if other_user != user and not other_user.colour and other_user.session == user.session:
-					flask_socketio.emit('update', flask.render_template('colour_picker.html', session=user.session), room=other_user.sid)
+				if other_user != user and other_user.session == user.session:
+					flask_socketio.emit('update_left', render_sidebar(other_user, user.session), room=other_user.sid)
+					if not other_user.colour:
+						flask_socketio.emit('update', flask.render_template('colour_picker.html', session=user.session), room=other_user.sid)
+			for _, admin in pblive.data.admins.items():
+				if admin.session == user.session:
+					flask_socketio.emit('update_left', render_sidebar(admin, user.session), room=admin.sid)
 		
 		del pblive.data.users[flask.request.sid]
 
@@ -124,10 +133,16 @@ def socket_register(colour_id, colour_name):
 		
 		# Relay change
 		for _, other_user in pblive.data.users.items():
-			if other_user != user and not other_user.colour and other_user.session == user.session:
-				flask_socketio.emit('update', flask.render_template('colour_picker.html', session=user.session), room=other_user.sid)
+			if other_user != user and other_user.session == user.session:
+				flask_socketio.emit('update_left', render_sidebar(other_user, user.session), room=other_user.sid)
+				if not other_user.colour:
+					flask_socketio.emit('update', flask.render_template('colour_picker.html', session=user.session), room=other_user.sid)
+		for _, admin in pblive.data.admins.items():
+			if admin.session == user.session:
+				flask_socketio.emit('update_left', render_sidebar(admin, user.session), room=admin.sid)
 	
 	flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
+	flask_socketio.emit('update_left', render_sidebar(user, user.session), room=user.sid)
 
 @socketio.on('answer')
 def socket_answer(question_num, answer):
