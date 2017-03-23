@@ -14,6 +14,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+server_ip = None
+
 sessions = {}
 users = {}
 admins = {}
@@ -48,6 +50,7 @@ class Question:
 	@staticmethod
 	def from_dict(obj):
 		question_types = {
+			'landing': LandingQuestion,
 			'mcq': MCQQuestion,
 			'draw': DrawQuestion,
 			'random': RandomQuestion,
@@ -64,6 +67,11 @@ class Question:
 			self.image = obj['image']
 		if 'answers' in obj:
 			self.answers = obj['answers']
+
+class LandingQuestion(Question):
+	# Not actually a question
+	template = 'session_landing.html'
+	template_admin = 'session_landing_admin.html'
 
 class MCQQuestion(Question):
 	template = 'question_mcq.html'

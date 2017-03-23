@@ -1,4 +1,4 @@
-/*
+{#
     PBLive
     Copyright © 2017  RunasSudo (Yingtong Li)
 
@@ -14,19 +14,12 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+#}
 
-#pblive-main {
-	padding-top: 5em;
-	padding-bottom: 5em;
-}
-@media only screen and (max-width: 767px) {
-	#pblive-main {
-		padding-top: 1em;
-		padding-bottom: 1em;
-	}
-}
+{% extends 'question.html' %}
 
-#qrcode img {
-	margin: 0 auto;
-}
+{% block base %}
+	<h1 class="ui dividing header">On your marks…</h1>
+	
+	<p>Waiting for the administrator to start the quiz…</p>
+{% endblock %}

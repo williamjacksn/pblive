@@ -21,6 +21,7 @@ import pblive.data
 
 import os
 import random
+import socket
 import sys
 import yaml
 
@@ -28,6 +29,12 @@ app = flask.Flask('pblive')
 app.jinja_env.globals['data'] = pblive.data
 
 socketio = flask_socketio.SocketIO(app)
+
+# Get server IP address
+tmp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+tmp_socket.connect(('8.8.8.8', 0)) # Connecting to a UDP socket sends no packets
+pblive.data.server_ip = tmp_socket.getsockname()[0]
+tmp_socket.close()
 
 # Load session data
 for f in os.listdir('data'):
