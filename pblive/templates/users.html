@@ -16,14 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #}
 
-{% if user.sid in data.users %}
+{% if user.sid in data.users and user.colour %}
 	<div>YOU:</div>
-	<div><button class="ui button" style="background-color: {{ user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ user.colour[0] }}</button></div>
+	<div><button class="ui button" style="{% if session.question_num in user.answers or session.questions[session.question_num].answerer == user %}background-color: {{ user.colour[1] }};{% else %}background-color: white; border: 2px solid {{ user.colour[1] }};{% endif %} width: 32px; height: 32px; padding: 0 0;">{{ user.colour[0] }}</button></div>
 	<div class="ui divider"></div>
 {% endif %}
 
 {% for _, other_user in data.users.items() %}
 	{% if other_user != user and other_user.colour and other_user.session == session %}
-		<div><button class="ui button" style="background-color: {{ other_user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ other_user.colour[0] }}</button></div>
+		<div><button class="ui button" style="{% if session.question_num in other_user.answers or session.questions[session.question_num].answerer == other_user %}background-color: {{ other_user.colour[1] }};{% else %}background-color: white; border: 2px solid {{ other_user.colour[1] }};{% endif %} width: 32px; height: 32px; padding: 0 0;">{{ other_user.colour[0] }}</button></div>
 	{% endif %}
 {% endfor %}
+
+&nbsp;

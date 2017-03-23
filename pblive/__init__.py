@@ -78,6 +78,7 @@ def socket_join(session_name):
 	
 	# Send initial colour picker
 	flask_socketio.emit('update', flask.render_template('colour_picker.html', session=session), room=flask.request.sid)
+	flask_socketio.emit('update_left', render_sidebar(user, session), room=flask.request.sid)
 
 def render_question(user, session, question_num):
 	return flask.render_template(session.questions[question_num].template, session=session, user=user, question_num=session.question_num)
@@ -155,9 +156,13 @@ def socket_answer(question_num, answer):
 			flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
 		
 		# Relay change
+		for _, other_user in pblive.data.users.items():
+			if other_user.session == user.session:
+				flask_socketio.emit('update_left', render_sidebar(other_user, user.session), room=other_user.sid)
 		for _, admin in pblive.data.admins.items():
 			if admin.session == user.session:
 				flask_socketio.emit('update', render_question_admin(user.session, user.session.question_num), room=admin.sid)
+				flask_socketio.emit('update_left', render_sidebar(admin, user.session), room=admin.sid)
 
 @socketio.on('reveal_answers')
 def socket_reveal_answers(question_num):
