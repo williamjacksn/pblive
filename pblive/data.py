@@ -14,6 +14,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import threading
+
 server_ip = None
 
 sessions = {}
@@ -117,3 +119,21 @@ def unique_answers_for_question(session, question_num):
 			else:
 				answers[user.answers[question_num]] = [user]
 	return answers
+
+class DummyLock:
+	def acquire(self):
+		pass
+	def release(self):
+		pass
+
+users_lock = DummyLock()
+def iterate_users():
+	users_lock.acquire()
+	yield from list(users.items())
+	users_lock.release()
+
+admins_lock = DummyLock()
+def iterate_admins():
+	admins_lock.acquire()
+	yield from list(admins.items())
+	admins_lock.release()
