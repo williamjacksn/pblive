@@ -28,9 +28,10 @@
 		<title>PBLive</title>
 		
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/semantic-ui/semantic.min.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}">
 	</head>
 	<body>
-		<div class="ui text container" style="padding: 5em 0em;">
+		<div id="pblive-main" class="ui text container">
 			{% block main %}{% endblock main %}
 		</div>
 		

@@ -1,4 +1,4 @@
-{#
+/*
     PBLive
     Copyright © 2017  RunasSudo (Yingtong Li)
 
@@ -14,27 +14,15 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#}
+*/
 
-{% extends 'semantic_base.html' %}
-
-{% block main %}
-	<div id="session_main">
-		Loading, please wait.
-	</div>
-{% endblock %}
-
-{% block script %}
-	<script src="{{ url_for('static', filename='vendor/socket-io/socket.io.min.js') }}"></script>
-	<script>
-		var session_name = '{{ session.name }}';
-		var socket = io.connect('http://' + document.domain + ':' + location.port);
-		socket.on('connect', function() {
-			socket.emit('join', session_name);
-		});
-		
-		socket.on('update', function(data) {
-			$('#session_main').html(data);
-		});
-	</script>
-{% endblock %}
+#pblive-main {
+	padding-top: 5em;
+	padding-bottom: 5em;
+}
+@media only screen and (max-width: 767px) {
+	#pblive-main {
+		padding-top: 1em;
+		padding-bottom: 1em;
+	}
+}
