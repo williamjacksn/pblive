@@ -129,7 +129,7 @@ def socket_answer(question_num, answer):
 	if question_num == user.session.question_num:
 		user.answers[question_num] = answer
 		
-		if not isinstance(user.session.questions[user.session.question_num], pblive.data.DrawQuestion):
+		if isinstance(user.session.questions[user.session.question_num], pblive.data.MCQQuestion):
 			flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
 		
 		# Relay change

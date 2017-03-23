@@ -28,7 +28,7 @@
 		function submitAnswer() {
 			socket.emit('answer', {{ question_num }}, $('#answer').val());
 		}
-		$('#answer').change(function() {
+		$('#answer').on('input', function() {
 			window.clearTimeout(submitAnswerTimer);
 			submitAnswerTimer = window.setTimeout(submitAnswer, 500);
 		});
