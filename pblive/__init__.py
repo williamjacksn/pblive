@@ -159,10 +159,18 @@ def socket_answer(question_num, answer):
 		if isinstance(user.session.questions[user.session.question_num], pblive.data.MCQQuestion):
 			flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
 		
+		# Hurry!
+		#if isinstance(user.session.questions[user.session.question_num], pblive.data.SpeedQuestion):
+		#	if user.session.questions[user.session.question_num].timer_thread is None:
+		#		user.session.questions[user.session.question_num].timer_thread = pblive.data.SpeedQuestionTimerThread(do_goto_question, user.session, user.session.question_num + 1)
+		#		user.session.questions[user.session.question_num].timer_thread.start()
+		
 		# Relay change
 		for _, other_user in pblive.data.iterate_users():
 			if other_user.session == user.session:
 				flask_socketio.emit('update_left', render_sidebar(other_user, user.session), room=other_user.sid)
+				if isinstance(user.session.questions[user.session.question_num], pblive.data.SpeedQuestion):
+					flask_socketio.emit('update', render_question(other_user, user.session, user.session.question_num), room=other_user.sid)
 		for _, admin in pblive.data.iterate_admins():
 			if admin.session == user.session:
 				flask_socketio.emit('update', render_question_admin(user.session, user.session.question_num), room=admin.sid)
@@ -176,25 +184,28 @@ def socket_reveal_answers(question_num):
 	
 	flask_socketio.emit('update', render_question_admin(user.session, user.session.question_num), room=flask.request.sid)
 
+def do_goto_question(session, question_num):
+	session.question_num = question_num
+	
+	# Do work for some questions
+	if isinstance(session.questions[question_num], pblive.data.RandomQuestion):
+		session.questions[question_num].answerer = random.choice([other_user for _, other_user in pblive.data.users.items() if other_user.session == session and other_user.colour])
+	
+	# Relay change
+	for _, other_user in pblive.data.iterate_users():
+		if other_user.session == session and other_user.colour:
+			flask_socketio.emit('update', render_question(other_user, session, session.question_num), room=other_user.sid)
+			flask_socketio.emit('update_left', render_sidebar(other_user, session), room=other_user.sid)
+	for _, admin in pblive.data.iterate_admins():
+		if admin.session == session:
+			flask_socketio.emit('update', render_question_admin(session, session.question_num), room=admin.sid)
+			flask_socketio.emit('update_left', render_sidebar(admin, session), room=admin.sid)
+
 @socketio.on('goto_question')
 def socket_goto_question(question_num):
 	user = pblive.data.admins[flask.request.sid]
 	
-	user.session.question_num = question_num
-	
-	# Do work for some questions
-	if isinstance(user.session.questions[question_num], pblive.data.RandomQuestion):
-		user.session.questions[question_num].answerer = random.choice([other_user for _, other_user in pblive.data.users.items() if other_user.session == user.session and other_user.colour])
-	
-	# Relay change
-	for _, other_user in pblive.data.iterate_users():
-		if other_user.session == user.session and other_user.colour:
-			flask_socketio.emit('update', render_question(other_user, other_user.session, other_user.session.question_num), room=other_user.sid)
-			flask_socketio.emit('update_left', render_sidebar(other_user, user.session), room=other_user.sid)
-	for _, admin in pblive.data.iterate_admins():
-		if admin.session == user.session:
-			flask_socketio.emit('update', render_question_admin(admin.session, admin.session.question_num), room=admin.sid)
-			flask_socketio.emit('update_left', render_sidebar(admin, user.session), room=admin.sid)
+	do_goto_question(user.session, question_num)
 
 @socketio.on('pass_question')
 def socket_pass_question():

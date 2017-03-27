@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import threading
+import time
 
 server_ip = None
 
@@ -56,13 +57,17 @@ class Question:
 			'mcq': MCQQuestion,
 			'draw': DrawQuestion,
 			'random': RandomQuestion,
-			'type': TypeQuestion
+			'type': TypeQuestion,
+			'speed': SpeedQuestion,
+			'speed_review': SpeedReviewQuestion,
 		}
 		question = question_types[obj['type']]()
 		question.load_dict(obj)
 		return question
 	
 	def load_dict(self, obj):
+		self.type = obj['type']
+		
 		if 'prompt' in obj:
 			self.prompt = obj['prompt']
 		if 'image' in obj:
@@ -93,6 +98,36 @@ class RandomQuestion(Question):
 class TypeQuestion(Question):
 	template = 'question_type.html'
 	template_admin = 'question_type_admin.html'
+
+class SpeedQuestion(MCQQuestion):
+	template = 'question_speed.html'
+	template_admin = 'question_speed_admin.html'
+	
+	def __init__(self):
+		self.timer_thread = None
+
+class SpeedQuestionTimerThread(threading.Thread):
+	def __init__(self, do_goto_question, session, next_question):
+		super().__init__()
+		
+		self.do_goto_question = do_goto_question
+		self.session = session
+		self.next_question = next_question
+		
+		self._stop = threading.Event()
+	
+	def stop(self):
+		self._stop.set()
+	
+	def run(self):
+		time.sleep(2)
+		if self._stop.isSet():
+			return
+		self.do_goto_question(self.session, self.next_question)
+
+class SpeedReviewQuestion(Question):
+	template = 'question_speed_review.html'
+	template_admin = 'question_speed_review_admin.html'
 
 class User:
 	def __init__(self, sid=None, session=None, answers=None, colour=None):

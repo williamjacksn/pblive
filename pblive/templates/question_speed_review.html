@@ -1,0 +1,43 @@
+{#
+    PBLive
+    Copyright © 2017  RunasSudo (Yingtong Li)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{% extends 'question.html' %}
+
+{% block base %}
+	<h1 class="ui dividing header">Quiz finished</h1>
+	
+	<ol>
+		{% for question in session.questions %}
+			{% set speed_question_num = loop.index0 %}
+			{% if question.type == 'speed' %}
+				<li>
+					{{ question.prompt }}
+					<ul>
+						{% for answer in question.answers %}
+							{% if answer == user.answers[speed_question_num] %}
+								<li><b>{{ answer }}</b></li>
+							{% else %}
+								<li>{{ answer }}</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+		{% endfor %}
+	</ol>
+{% endblock %}
