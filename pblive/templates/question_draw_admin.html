@@ -80,12 +80,16 @@
 					window.redraw = redraw;
 					
 					function resize_canvas() {
-						document.getElementById('draw_canvas').width = document.getElementById('session_main').clientWidth;
-						document.getElementById('draw_canvas').height = 0.8 * window.innerHeight;
+						var maxWidth = document.getElementById('session_main').clientWidth;
+						var maxHeight = 0.8 * window.innerHeight
 						
 						// Recalculate scale
-						canvasAR = context.canvas.width / context.canvas.height;
-						scale = (canvasAR > imageAR) ? (context.canvas.height / image.height) : (context.canvas.width / image.width); // image dim * scale = canvas dim
+						var maxAR = maxWidth / maxHeight;
+						scale = (maxAR > imageAR) ? (maxHeight / image.height) : (maxWidth / image.width); // image dim * scale = canvas dim
+						
+						// Minimise size of canvas
+						document.getElementById('draw_canvas').width = image.width * scale;
+						document.getElementById('draw_canvas').height = image.height * scale;
 						
 						redraw();
 					}
