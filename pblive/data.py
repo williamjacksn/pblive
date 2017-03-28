@@ -98,6 +98,16 @@ class RandomQuestion(Question):
 class TypeQuestion(Question):
 	template = 'question_type.html'
 	template_admin = 'question_type_admin.html'
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		self.answer_form = kwargs.get('answer_form', '$1')
+	
+	def load_dict(self, obj):
+		super().load_dict(obj)
+		
+		self.answer_form = obj.get('answer_form', self.answer_form)
 
 class SpeedQuestion(MCQQuestion):
 	template = 'question_speed.html'

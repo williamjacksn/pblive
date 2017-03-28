@@ -23,7 +23,7 @@
 		<ul class="ui list">
 			{% for answer, users in data.unique_answers_for_question(session, question_num).items() %}
 				<li style="line-height: 32px;">
-					{{ answer }}:
+					{{ session.questions[question_num].answer_form.replace('$1', answer) }}:
 					{% for user in users %}
 						<button class="ui button" style="background-color: {{ user.colour[1] }}; width: 32px; height: 32px; padding: 0 0;">{{ user.colour[0] }}</button>
 					{% endfor %}

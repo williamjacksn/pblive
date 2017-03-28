@@ -19,9 +19,12 @@
 {% extends 'question.html' %}
 
 {% block base %}
-	<div class="ui input">
-		<input type="text" id="answer" name="answer" value="{{ user.answers[question_num] }}">
-	</div>
+	{% set answerinput %}
+		<div class="ui input">
+			<input type="text" id="answer" name="answer" value="{{ user.answers[question_num] }}">
+		</div>
+	{% endset %}
+	<div>{{ session.questions[question_num].answer_form.replace('$1', answerinput)|safe }}</div>
 	
 	<script>
 		var submitAnswerTimer = 0;
