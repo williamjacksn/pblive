@@ -14,6 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import eventlet
 import flask
 import flask_socketio
 
@@ -24,6 +25,8 @@ import random
 import socket
 import sys
 import yaml
+
+eventlet.monkey_patch()
 
 app = flask.Flask('pblive')
 app.jinja_env.globals['data'] = pblive.data
@@ -41,7 +44,7 @@ for f in os.listdir('data'):
 	if f.endswith('.yaml') and not f.startswith('.'):
 		session_name = f[:-5]
 		with open(os.path.join('data', f)) as fh:
-			pblive.data.sessions[session_name] = data.Session.from_dict(yaml.load(fh), session_name)
+			pblive.data.sessions[session_name] = pblive.data.Session.from_dict(yaml.load(fh), session_name)
 
 @app.route('/')
 def index():
@@ -73,7 +76,7 @@ def socket_join(session_name):
 	app.logger.debug('New client {} connected'.format(flask.request.sid))
 	
 	session = pblive.data.sessions[session_name]
-	user = data.User(sid=flask.request.sid, session=session)
+	user = pblive.data.User(sid=flask.request.sid, session=session)
 	pblive.data.users[flask.request.sid] = user
 	
 	# Send initial colour picker
@@ -224,3 +227,7 @@ def socket_pass_question():
 			if admin.session == user.session:
 				flask_socketio.emit('update', render_question_admin(admin.session, admin.session.question_num), room=admin.sid)
 				flask_socketio.emit('update_left', render_sidebar(admin, user.session), room=admin.sid)
+
+# Start server
+if __name__ == '__main__':
+	socketio.run(app, host='0.0.0.0')

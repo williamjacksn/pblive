@@ -28,7 +28,7 @@
 	<script src="{{ url_for('static', filename='vendor/socket-io/socket.io.min.js') }}"></script>
 	<script>
 		var session_name = '{{ session.name }}';
-		var socket = io.connect('http://' + document.domain + ':' + location.port);
+		var socket = io.connect('ws://' + document.domain + ':' + location.port);
 		socket.on('connect', function() {
 			socket.emit('join_admin', session_name);
 		});
