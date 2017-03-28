@@ -117,6 +117,10 @@ def socket_disconnect():
 	if flask.request.sid in data.users:
 		user = data.users[flask.request.sid]
 		
+		data.users_lock.acquire()
+		del data.users[flask.request.sid]
+		data.users_lock.release()
+		
 		# Release the colour if it's being held
 		if user.colour:
 			user.session.colours.append(user.colour)
@@ -130,10 +134,6 @@ def socket_disconnect():
 			for _, admin in data.iterate_admins():
 				if admin.session == user.session:
 					flask_socketio.emit('update_left', render_sidebar(admin, user.session), room=admin.sid)
-		
-		data.users_lock.acquire()
-		del data.users[flask.request.sid]
-		data.users_lock.release()
 
 @socketio.on('register')
 def socket_register(colour_id, colour_name):
