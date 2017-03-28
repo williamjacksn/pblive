@@ -26,13 +26,7 @@
 	</ul>
 	
 	{% if data.responses_for_question(session, question_num) > 0 %}
-		<div><button class="ui negative button">Hurry!</button></div>
-		{# Very dodgy! #}
-		<script>
-			window.setTimeout(function() {
-				socket.emit('goto_question', {{ question_num + 1 }});
-			}, 1500);
-		</script>
+		<div style="margin-bottom: 0.5em;"><button class="ui negative basic button">Hurry!</button></div>
 	{% endif %}
 {% endblock base %}
 

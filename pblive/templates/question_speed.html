@@ -19,12 +19,12 @@
 {% extends 'question.html' %}
 
 {% block base %}
-	<div class="ui doubling eight column grid">
+	<div>
 		{% for answer in session.questions[question_num].answers %}
-			<div class="column"><button class="ui button{% if answer == user.answers[question_num] %} primary{% endif %}" onclick="socket.emit('answer', {{ question_num }}, '{{ answer }}');">{{ answer }}</button></div>
+			<button class="ui button{% if answer == user.answers[question_num] %} primary{% endif %}" onclick="socket.emit('answer', {{ question_num }}, '{{ answer }}');">{{ answer }}</button>
 		{% endfor %}
 		{% if data.responses_for_question(session, question_num) > 0 %}
-			<div class="column"><button class="ui negative button">Hurry!</button></div>
+			<button class="ui negative basic button">Hurry!</button>
 		{% endif %}
 	</div>
 {% endblock %}

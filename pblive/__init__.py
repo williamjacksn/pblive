@@ -157,16 +157,21 @@ def socket_answer(question_num, answer):
 	user = pblive.data.users[flask.request.sid]
 	
 	if question_num == user.session.question_num:
+		if isinstance(user.session.questions[user.session.question_num], pblive.data.SpeedQuestion):
+			if question_num in user.answers:
+				# Only one shot!
+				return
+		
 		user.answers[question_num] = answer
 		
 		if isinstance(user.session.questions[user.session.question_num], pblive.data.MCQQuestion):
 			flask_socketio.emit('update', render_question(user, user.session, user.session.question_num), room=user.sid)
 		
 		# Hurry!
-		#if isinstance(user.session.questions[user.session.question_num], pblive.data.SpeedQuestion):
-		#	if user.session.questions[user.session.question_num].timer_thread is None:
-		#		user.session.questions[user.session.question_num].timer_thread = pblive.data.SpeedQuestionTimerThread(do_goto_question, user.session, user.session.question_num + 1)
-		#		user.session.questions[user.session.question_num].timer_thread.start()
+		if isinstance(user.session.questions[user.session.question_num], pblive.data.SpeedQuestion):
+			if user.session.questions[user.session.question_num].timer_thread is None:
+				user.session.questions[user.session.question_num].timer_thread = pblive.data.SpeedQuestionTimerThread(flask.copy_current_request_context(do_goto_question), user.session, user.session.question_num + 1)
+				user.session.questions[user.session.question_num].timer_thread.start()
 		
 		# Relay change
 		for _, other_user in pblive.data.iterate_users():
@@ -188,6 +193,11 @@ def socket_reveal_answers(question_num):
 	flask_socketio.emit('update', render_question_admin(user.session, user.session.question_num), room=flask.request.sid)
 
 def do_goto_question(session, question_num):
+	# Cleanup old question
+	if isinstance(session.questions[session.question_num], pblive.data.SpeedQuestion):
+		if session.questions[session.question_num].timer_thread is not None:
+			session.questions[session.question_num].timer_thread.stop()
+	
 	session.question_num = question_num
 	
 	# Do work for some questions
