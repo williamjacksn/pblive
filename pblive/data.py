@@ -41,13 +41,11 @@ class Session:
 		return cls(name=name, title=obj['title'], questions=[Question.from_dict(x) for x in obj['questions']])
 
 class Question:
-	def __init__(self, prompt=None, image=None, answers=None, revealed=False):
-		if answers is None:
-			answers = []
+	def __init__(self, *args, **kwargs):
+		self.prompt = kwargs.get('prompt', None)
+		self.image = kwargs.get('image', None)
+		self.answers = kwargs.get('answers', [])
 		
-		self.prompt = prompt
-		self.image = image
-		self.answers = answers
 		self.revealed = False
 	
 	@staticmethod
@@ -68,12 +66,9 @@ class Question:
 	def load_dict(self, obj):
 		self.type = obj['type']
 		
-		if 'prompt' in obj:
-			self.prompt = obj['prompt']
-		if 'image' in obj:
-			self.image = obj['image']
-		if 'answers' in obj:
-			self.answers = obj['answers']
+		self.prompt = obj.get('prompt', self.prompt)
+		self.image = obj.get('image', self.image)
+		self.answers = obj.get('answers', self.answers)
 
 class LandingQuestion(Question):
 	# Not actually a question
@@ -92,8 +87,10 @@ class RandomQuestion(Question):
 	template = 'question_random.html'
 	template_admin = 'question_random_admin.html'
 	
-	def __init__(self):
-		self.answerer = None
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		self.answerer = kwargs.get('answerer', None)
 
 class TypeQuestion(Question):
 	template = 'question_type.html'
@@ -113,7 +110,9 @@ class SpeedQuestion(MCQQuestion):
 	template = 'question_speed.html'
 	template_admin = 'question_speed_admin.html'
 	
-	def __init__(self):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
 		self.timer_thread = None
 
 class SpeedQuestionTimerThread(threading.Thread):
