@@ -24,7 +24,7 @@ try:
 except ImportError:
 	import data
 
-import os
+import os, os.path
 import random
 import socket
 import sys
@@ -65,7 +65,7 @@ def session(session_name):
 @app.route('/image/<location>')
 def image(location):
 	# TODO: Relative path
-	return flask.send_from_directory('/home/runassudo/Documents/pblive/data/img', location)
+	return flask.send_from_directory(os.path.join(os.getcwd(), 'data/img'), location)
 
 @app.route('/admin/session/<session_name>')
 def admin_session(session_name):
