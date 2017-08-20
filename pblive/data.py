@@ -100,11 +100,15 @@ class TypeQuestion(Question):
 		super().__init__(*args, **kwargs)
 		
 		self.answer_form = kwargs.get('answer_form', '$1')
+		self.answer_type = kwargs.get('answer_type', None)
+		self.answer_range = kwargs.get('answer_range', None)
 	
 	def load_dict(self, obj):
 		super().load_dict(obj)
 		
 		self.answer_form = obj.get('answer_form', self.answer_form)
+		self.answer_type = obj.get('answer_type', self.answer_type)
+		self.answer_range = obj.get('answer_range', self.answer_range)
 
 class SpeedQuestion(MCQQuestion):
 	template = 'question_speed.html'

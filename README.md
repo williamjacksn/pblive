@@ -23,10 +23,11 @@ Place in `data/example.yaml`, where the `data` directory is a sibling of this RE
       answers: [A, B, C, D]
     - type: type
       prompt: This is a basic short answer question
-      answer_form: $1
     - type: type
-      prompt: The answer to this short answer question is a probability
-      answer_form: 1 in $1
+      prompt: The answer to this short answer question is a percentage
+      answer_form: $1%
+      answer_type: number
+      answer_range: [0, 100]
     - type: draw
       prompt: Draw on the diagram
       image: some_image.gif

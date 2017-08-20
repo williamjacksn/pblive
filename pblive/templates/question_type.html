@@ -25,6 +25,23 @@
 		</div>
 	{% endset %}
 	<div>{{ session.questions[question_num].answer_form.replace('$1', answerinput)|safe }}</div>
+	{% if session.questions[question_num].answer_type %}
+		<div class="ui hidden error message">
+			<div class="header">
+				{% if session.questions[question_num].answer_range %}
+					{% if session.questions[question_num].answer_range[0] is not none and session.questions[question_num].answer_range[1] is not none %}
+						Please enter a {{ session.questions[question_num].answer_type }} between {{ session.questions[question_num].answer_range[0] }} and {{ session.questions[question_num].answer_range[1] }}.
+					{% elif session.questions[question_num].answer_range[0] is not none %}
+						Please enter a {{ session.questions[question_num].answer_type }} greater than {{ session.questions[question_num].answer_range[0] }}.
+					{% else %}
+						Please enter a {{ session.questions[question_num].answer_type }} less than {{ session.questions[question_num].answer_range[1] }}.
+					{% endif %}
+				{% else %}
+					Please enter a {{ session.questions[question_num].answer_type }}.
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
 	
 	<script>
 		var submitAnswerTimer = 0;
@@ -33,7 +50,26 @@
 		}
 		$('#answer').on('input', function() {
 			window.clearTimeout(submitAnswerTimer);
-			submitAnswerTimer = window.setTimeout(submitAnswer, 500);
+			// Validate input
+			{% if session.questions[question_num].answer_type == 'number' %}
+				isValid = $.isNumeric($('#answer').val());
+				{% if session.questions[question_num].answer_range %}
+					{% if session.questions[question_num].answer_range[0] is not none %}
+						isValid = isValid && parseFloat($('#answer').val()) >= {{ session.questions[question_num].answer_range[0] }};
+					{% endif %}
+					{% if session.questions[question_num].answer_range[1] is not none %}
+						isValid = isValid && parseFloat($('#answer').val()) <= {{ session.questions[question_num].answer_range[1] }};
+					{% endif %}
+				{% endif %}
+			{% else %}
+				isValid = true;
+			{% endif %}
+			if (isValid) {
+				$('.message').addClass('hidden');
+				submitAnswerTimer = window.setTimeout(submitAnswer, 500);
+			} else {
+				$('.message').removeClass('hidden');
+			}
 		});
 	</script>
 {% endblock %}
