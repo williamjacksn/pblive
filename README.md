@@ -7,7 +7,7 @@ PBLive is an open-source self-hosted live online quiz tool, similar to Kahoot an
     virtualenv venv
     . venv/bin/activate
     pip install -r requirements.txt
-    python -m pblive.__init__
+    python -m pblive
 
 Navigate to http://1.2.3.4:5000/admin to begin.
 
