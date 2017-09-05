@@ -19,9 +19,22 @@
 {% extends 'question.html' %}
 
 {% block base %}
-	<div>
-		{% for answer in session.questions[question_num].answers %}
-			<button class="ui button{% if answer == user.answers[question_num] %} primary{% endif %}" onclick="socket.emit('answer', {{ question_num }}, '{{ answer }}');">{{ answer }}</button>
-		{% endfor %}
-	</div>
+	{% if session.questions[question_num].maximum == 1 %}
+		<div>
+			{% for answer in session.questions[question_num].answers %}
+				<button class="ui button{% if answer in user.answers[question_num] %} primary{% endif %}" onclick="socket.emit('answer', {{ question_num }}, ['{{ answer }}']);">{{ answer }}</button>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="ui form">
+			{% for answer in session.questions[question_num].answers %}
+				<div class="inline field">
+					<div class="ui checkbox">
+						<input type="checkbox" class="mcq_checkbox" data-answer="{{ answer }}" onchange="socket.emit('answer', {{ question_num }}, $('.mcq_checkbox:checked').map(function(i,e){return e.dataset.answer;}).get());">
+						<label>{{ answer }}</label>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
 {% endblock %}

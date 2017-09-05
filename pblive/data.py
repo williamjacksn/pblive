@@ -78,6 +78,16 @@ class LandingQuestion(Question):
 class MCQQuestion(Question):
 	template = 'question_mcq.html'
 	template_admin = 'question_mcq_admin.html'
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		self.maximum = kwargs.get('maximum', 1)
+	
+	def load_dict(self, obj):
+		super().load_dict(obj)
+		
+		self.maximum = obj.get('maximum', self.maximum)
 
 class DrawQuestion(Question):
 	template = 'question_draw.html'
