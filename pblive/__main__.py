@@ -71,6 +71,10 @@ def image(location):
 def admin_session(session_name):
 	return flask.render_template('admin_session.html', session=data.sessions[session_name])
 
+@app.route('/admin/session/<session_name>/full')
+def admin_session_full(session_name):
+	return flask.render_template('admin_session_full.html', session=data.sessions[session_name], render_question_full=render_question_full)
+
 @app.route('/debug')
 def debug():
 	assert app.debug == False
@@ -89,6 +93,9 @@ def socket_join(session_name):
 
 def render_question(user, session, question_num):
 	return flask.render_template(session.questions[question_num].template, session=session, user=user, question_num=session.question_num)
+
+def render_question_full(session, question_num):
+	return flask.render_template(session.questions[question_num].template, session=session, user=data.User(), question_num=question_num)
 
 def render_question_admin(session, question_num):
 	return flask.render_template(session.questions[question_num].template_admin, session=session, question_num=session.question_num)
