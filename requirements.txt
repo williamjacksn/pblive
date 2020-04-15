@@ -1,4 +1,4 @@
 eventlet==0.25.2
-Flask==0.12
+Flask==1.0
 Flask-SocketIO==2.8.5
 PyYAML==3.12
