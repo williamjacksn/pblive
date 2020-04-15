@@ -2,6 +2,8 @@
 
 PBLive is an open-source self-hosted live online quiz tool, similar to Kahoot and Socrative.
 
+This repository was forked from https://yingtongli.me/git/PBLive/
+
 ## Installing and running
 
     virtualenv venv
