@@ -17,16 +17,16 @@
 #}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<!-- Standard Meta -->
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-		
+
 		<!-- Site Properties -->
 		<title>PBLive</title>
-		
+
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/semantic-ui/semantic.min.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}">
 	</head>
@@ -38,7 +38,7 @@
 			</div>
 			<div style="clear: both;"></div>
 		</div>
-		
+
 		<script src="{{ url_for('static', filename='vendor/jquery/jquery-3.1.1.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='vendor/semantic-ui/semantic.min.js') }}"></script>
 		{% block script %}{% endblock script %}
