@@ -1,15 +1,5 @@
-appdirs==1.4.3
-click==6.7
-enum-compat==0.0.2
 eventlet==0.20.1
 Flask==0.12
 Flask-SocketIO==2.8.5
-itsdangerous==0.24
-Jinja2==2.9.5
-MarkupSafe==1.0
-packaging==16.8
-pyparsing==2.2.0
-python-socketio==1.7.2
+#python-socketio==1.7.2
 PyYAML==3.12
-six==1.10.0
-Werkzeug==0.12
