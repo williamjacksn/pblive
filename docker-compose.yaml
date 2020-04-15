@@ -4,5 +4,6 @@ services:
   pblive:
     image: docker.pkg.github.com/williamjacksn/pblive/pblive
     build: .
+    init: true
     ports:
       - 5000:5000
