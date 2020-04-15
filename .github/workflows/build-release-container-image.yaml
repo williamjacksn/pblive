@@ -1,0 +1,28 @@
+name: Build the release container image
+
+on:
+  release:
+    types: [published]
+
+jobs:
+
+  build:
+    name: Build the release container image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v1
+    - name: Log in to the registry
+      run: docker login --password "${{ secrets.GITHUB_TOKEN }}" --username "${GITHUB_ACTOR}" docker.pkg.github.com
+    - name: Get the release tag
+      id: get-release-tag
+      run: echo ::set-output name=release-tag::${GITHUB_REF/refs\/tags\//}
+    - name: Set the container image name
+      id: set-image-name
+      run: echo ::set-output name=image-name::docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}:${{ steps.get-release-tag.outputs.release-tag }}
+      env:
+        IMAGE_NAME: pblive
+    - name: Build the container image
+      run: docker build --file Dockerfile --tag ${{ steps.set-image-name.outputs.image-name }} .
+    - name: Push the image to the registry
+      run: docker image push ${{ steps.set-image-name.outputs.image-name }}

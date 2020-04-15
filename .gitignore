@@ -1,4 +1,4 @@
-/data
-/venv
+.idea
+data
+venv
 __pycache__
-.*
