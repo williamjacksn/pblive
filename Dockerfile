@@ -2,9 +2,7 @@ FROM python:3.8.6-alpine3.12
 
 COPY requirements.txt /pblive/requirements.txt
 
-RUN /sbin/apk add --no-cache --virtual .deps gcc musl-dev \
- && /usr/local/bin/pip install --no-cache-dir --requirement /pblive/requirements.txt \
- && /sbin/apk del --no-cache .deps
+RUN /usr/local/bin/pip install --no-cache-dir --requirement /pblive/requirements.txt
 
 ENV PYTHONUNBUFFERED="1"
 
