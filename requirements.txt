@@ -1,6 +1,6 @@
 --extra-index-url https://alpine-wheels.github.io/index
 
-eventlet==0.29.1
+eventlet==0.30.0
 Flask==1.1.2
 Flask-SocketIO==4.3.2
 PyYAML==5.3.1
