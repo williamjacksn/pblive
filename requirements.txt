@@ -3,4 +3,4 @@
 eventlet==0.30.0
 Flask==1.1.2
 Flask-SocketIO==4.3.2
-PyYAML==5.4
+PyYAML==5.4.1
