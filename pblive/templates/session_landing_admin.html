@@ -22,7 +22,7 @@
 	<h1 class="ui dividing header">On your marks…</h1>
 	
 	<p style="text-align: center;">Open the following address in your browser, and choose <i>{{ session.title }}</i>:</p>
-	<p style="text-align: center; font-family: monospace; font-size: xx-large;">http://{{ data.server_ip }}:5000</p>
+	<p style="text-align: center; font-family: monospace; font-size: xx-large;">{{ data.server_ip }}</p>
 	<p style="text-align: center;">Or scan the following QR code:</p>
 	
 	<div id="qrcode" style="text-align: center; margin-bottom: 1em;"></div>

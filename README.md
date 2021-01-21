@@ -9,6 +9,7 @@ This repository was forked from https://yingtongli.me/git/PBLive/
     virtualenv venv
     . venv/bin/activate
     pip install -r requirements.txt
+    export QUIZ_SERVER_URL="http://localhost:5000"
     python -m pblive
 
 Navigate to http://1.2.3.4:5000/admin to begin.
@@ -45,6 +46,17 @@ Place in `data/example.yaml`, where the `data` directory is a sibling of this RE
     - type: speed_review
 
 Files like `some_image.gif` should be placed within the `img` subfolder of `data`.
+
+## Docker
+
+### Example
+
+```bash
+# build
+docker build -t pblive .
+
+docker run --rm -v `pwd`/example.yaml:/pblive/data/example.yaml -e "QUIZ_SERVER_URL=http://localhost:5000"  -p 5000:5000 pblive
+```
 
 ## Security
 

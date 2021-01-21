@@ -40,6 +40,8 @@ tmp_socket.connect(('118.138.0.0', 0))  # Connecting to a UDP socket sends no pa
 data.server_ip = tmp_socket.getsockname()[0]
 tmp_socket.close()
 
+data.server_ip = os.environ['QUIZ_SERVER_URL']
+
 # Load session data
 for f in os.listdir('data'):
     if f.endswith('.yaml') and not f.startswith('.'):
