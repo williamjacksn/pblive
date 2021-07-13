@@ -1,14 +1,22 @@
 FROM python:3.9.6-alpine3.14
 
-COPY requirements.txt /pblive/requirements.txt
+RUN /usr/sbin/adduser -g python -D python
 
-RUN /usr/local/bin/pip install --no-cache-dir --requirement /pblive/requirements.txt
+USER python
+RUN /usr/local/bin/python -m venv /home/python/venv
 
-ENV PYTHONUNBUFFERED="1"
-ENV QUIZ_SERVER_URL="This is set by env var QUIZ_SERVER_URL"
+COPY --chown=python:python requirements.txt /home/python/pblive/requirements.txt
+RUN /home/python/venv/bin/pip install --no-cache-dir --requirement /home/python/pblive/requirements.txt
 
-WORKDIR /pblive
-ENTRYPOINT ["/usr/local/bin/python"]
+ENV PATH="/home/python/venv/bin:${PATH}" \
+    PYTHONUNBUFFERED="1" \
+    QUIZ_SERVER_URL="This is set by env var QUIZ_SERVER_URL" \
+    TZ="Etc/UTC"
+
+WORKDIR /home/python/pblive
+ENTRYPOINT ["/home/python/venv/bin/python"]
 CMD ["-m", "pblive"]
 
-COPY /pblive /pblive/pblive
+LABEL org.opencontainers.image.source="https://github.com/williamjacksn/pblive"
+
+COPY --chown=python:python pblive /home/python/pblive/pblive
