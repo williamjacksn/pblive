@@ -1,0 +1,6 @@
+--extra-index-url https://alpine-wheels.github.io/index
+
+eventlet
+flask
+flask-socketio
+pyyaml
