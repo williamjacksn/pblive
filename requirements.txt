@@ -10,7 +10,7 @@ click==8.0.1
     # via flask
 dnspython==1.16.0
     # via eventlet
-eventlet==0.31.1
+eventlet==0.32.0
     # via -r requirements.in
 flask==1.1.2
     # via
