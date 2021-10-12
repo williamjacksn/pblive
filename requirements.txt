@@ -18,7 +18,7 @@ flask==1.1.2
     #   flask-socketio
 flask-socketio==4.3.2
     # via -r requirements.in
-greenlet==1.1.0
+greenlet==1.1.2
     # via eventlet
 itsdangerous==2.0.1
     # via flask
