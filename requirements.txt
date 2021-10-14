@@ -30,7 +30,7 @@ python-engineio==3.14.2
     # via python-socketio
 python-socketio==4.6.1
     # via flask-socketio
-pyyaml==5.4.1
+pyyaml==6.0
     # via -r requirements.in
 six==1.16.0
     # via
