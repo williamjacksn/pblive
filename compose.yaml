@@ -5,3 +5,11 @@ services:
     init: true
     ports:
       - 5000:5000
+
+  shell:
+    entrypoint:
+      - /bin/sh
+    image: ghcr.io/williamjacksn/pblive
+    init: true
+    volumes:
+      - ./:/home/python/pblive
