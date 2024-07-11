@@ -12,7 +12,7 @@ dnspython==2.2.1
     # via eventlet
 eventlet==0.35.2
     # via -r requirements.in
-flask==2.2.2
+flask==2.2.5
     # via
     #   -r requirements.in
     #   flask-socketio
