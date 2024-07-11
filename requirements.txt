@@ -6,13 +6,15 @@
 #
 --extra-index-url https://alpine-wheels.github.io/index
 
+blinker==1.8.2
+    # via flask
 click==8.1.3
     # via flask
 dnspython==2.2.1
     # via eventlet
 eventlet==0.33.3
     # via -r requirements.in
-flask==2.2.2
+flask==3.0.3
     # via
     #   -r requirements.in
     #   flask-socketio
@@ -37,6 +39,7 @@ pyyaml==6.0
 six==1.16.0
     # via
     #   eventlet
+    #   python-engineio
     #   python-socketio
-werkzeug==2.2.2
+werkzeug==3.0.3
     # via flask
