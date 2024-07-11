@@ -38,5 +38,5 @@ six==1.16.0
     # via
     #   python-engineio
     #   python-socketio
-werkzeug==2.2.2
+werkzeug==3.0.3
     # via flask
