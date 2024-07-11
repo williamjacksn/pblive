@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> This repository is archived because I not longer actively use this software. If you have a question about this repo, please
+> [open an issue on my personal repository][x].
+
+[x]: https://github.com/williamjacksn/williamjacksn/issues
+
 # PBLive
 
 PBLive is an open-source self-hosted live online quiz tool, similar to Kahoot and Socrative.
